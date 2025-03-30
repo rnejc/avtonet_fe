@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
-import Card from "../components/Card.tsx"; // Make sure this path is correct
+import Card from "../components/Card.tsx";
 import api from "../api/axios.ts";
-
 
 interface Car {
     id: number;
@@ -13,6 +12,7 @@ interface Car {
     fuelType: string;
     transmission: string;
     fuelConsumption: number;
+    color: string;
 }
 
 const Cars = () => {
@@ -20,7 +20,6 @@ const Cars = () => {
     const [cars, setCars] = useState<Car[]>([]);
     const url = "cars";
 
-    // Load cars from the backend
     const loadCars = async () => {
         try {
             const res = await api.get(url);
@@ -49,9 +48,11 @@ const Cars = () => {
                         </div>
                     )}
                     <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                        {cars.map((car, i) => {
-                            return <Card key={i} data={car} />;
-                        })}
+                        <div className="col">
+                            {cars.map((car, i) => (
+                                <Card key={i} data={car} />
+                            ))}
+                        </div>
                     </div>
                 </div>
             </div>

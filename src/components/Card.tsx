@@ -1,3 +1,5 @@
+//Card is used to display attributes of a car. It is used in Cars.tsx.
+
 interface Car {
     id: number;
     model: string;
@@ -7,6 +9,7 @@ interface Car {
     fuelType: string;
     transmission: string;
     fuelConsumption: number;
+    color: string;
 }
 
 const Card = ({ data }: { data: Car }) => {
@@ -28,6 +31,7 @@ const Card = ({ data }: { data: Car }) => {
                 <p className="card-text">Transmission: {data.transmission}</p> {/* Transmission */}
                 <p className="card-text">Fuel Type: {data.fuelType}</p> {/* Fuel Type */}
                 <p className="card-text">Fuel Consumption: {data.fuelConsumption} L/100km</p> {/* Fuel Consumption */}
+                <p className="card-text">Color: {data.color}</p> {/* Color */}
 
                 <div className="d-flex justify-content-between align-items-center">
                     <div className="btn-group">
