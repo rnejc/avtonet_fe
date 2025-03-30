@@ -6,6 +6,7 @@ import Wrapper from "./components/Wrapper.tsx";
 import Login from "./pages/Login.tsx";
 import Cars from "./pages/Cars.tsx";
 import CarAdd from "./pages/CarAdd.tsx";
+import CarEdit from "./pages/CarEdit.tsx";
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
                   <Route path="/login" element={<Login />} />
                   <Route path="/cars" element={<Cars />} />
                   <Route path="/carAdd" element={<CarAdd />} />
+                  <Route path="/carEdit/:id" element={<CarEdit />} />
               </Routes>
           </Wrapper>
       </>

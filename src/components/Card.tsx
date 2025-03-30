@@ -10,7 +10,11 @@ interface Car {
     color: string;
 }
 
-const Card = ({ data, deleteCar }: { data: Car; deleteCar: (id: number) => void }) => {
+const Card = ({ data, deleteCar, editCar }: {
+    data: Car;
+    deleteCar: (id: number) => void;
+    editCar: (id: number) => void;
+}) => {
     return (
         <div className="card shadow-sm">
             <svg className="bd-placeholder-img card-img-top" width="100%" height="225"
@@ -25,7 +29,7 @@ const Card = ({ data, deleteCar }: { data: Car; deleteCar: (id: number) => void 
                 <h2>{data.model}</h2>
                 <p className="card-text">Year: {data.year}</p>
                 <p className="card-text">Mileage: {data.mileage} km</p>
-                <p className="card-text">Engine Displacement: {data.engineDisplacement}L</p>
+                <p className="card-text">Engine Displacement: {data.engineDisplacement} L</p>
                 <p className="card-text">Transmission: {data.transmission}</p>
                 <p className="card-text">Fuel Type: {data.fuelType}</p>
                 <p className="card-text">Fuel Consumption: {data.fuelConsumption} L/100km</p>
@@ -33,7 +37,12 @@ const Card = ({ data, deleteCar }: { data: Car; deleteCar: (id: number) => void 
 
                 <div className="d-flex justify-content-between align-items-center">
                     <div className="btn-group">
-                        <button type="button" className="btn btn-sm btn-outline-secondary">Edit</button>
+                        <button
+                            onClick={() => editCar(data.id)}
+                            type="button"
+                            className="btn btn-sm btn-outline-secondary">
+                            Edit
+                        </button>
                         <button
                             onClick={() => deleteCar(data.id)}
                             type="button"

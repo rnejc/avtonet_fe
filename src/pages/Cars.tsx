@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import Card from "../components/Card.tsx";
 import api from "../api/axios.ts";
@@ -18,6 +19,7 @@ interface Car {
 const Cars = () => {
     const [errorMessage, setErrorMessage] = useState("");
     const [cars, setCars] = useState<Car[]>([]);
+    const navigate = useNavigate();
     const url = "cars";
 
     const loadCars = async () => {
@@ -35,6 +37,9 @@ const Cars = () => {
     };
 
     const deleteCar = async (id: number) => {
+        const check = window.confirm("Are you sure you want to delete this car?");
+        if (!check) return;
+
         const deleteUrl = `/cars/${id}`;
         try {
             const res = await api.delete(deleteUrl);
@@ -45,6 +50,10 @@ const Cars = () => {
         } catch (error) {
             console.log(error);
         }
+    };
+
+    const editCar = (id: number) => {
+        navigate(`/carEdit/${id}`);
     };
 
     useEffect(() => {
@@ -63,7 +72,7 @@ const Cars = () => {
                     <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
                         <div className="col">
                             {cars.map((car, i) => (
-                                <Card key={i} data={car} deleteCar={deleteCar} />
+                                <Card key={i} data={car} deleteCar={deleteCar} editCar={editCar} />
                             ))}
                         </div>
                     </div>
