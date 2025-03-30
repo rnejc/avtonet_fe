@@ -34,6 +34,19 @@ const Cars = () => {
         }
     };
 
+    const deleteCar = async (id: number) => {
+        const deleteUrl = `/cars/${id}`;
+        try {
+            const res = await api.delete(deleteUrl);
+            if (res.status === 200) {
+                console.log("Car deleted successfully");
+                setCars((prevCars) => prevCars.filter((car) => car.id !== id)); // Remove deleted car from state
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    };
+
     useEffect(() => {
         loadCars();
     }, []);
@@ -50,7 +63,7 @@ const Cars = () => {
                     <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
                         <div className="col">
                             {cars.map((car, i) => (
-                                <Card key={i} data={car} />
+                                <Card key={i} data={car} deleteCar={deleteCar} />
                             ))}
                         </div>
                     </div>
