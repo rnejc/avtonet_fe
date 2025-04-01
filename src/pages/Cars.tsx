@@ -14,6 +14,9 @@ interface Car {
     transmission: string;
     fuelConsumption: number;
     color: string;
+    price: number;
+    brand: { id: number; name: string };
+    user: { id: number };
 }
 
 const Cars = () => {
@@ -26,7 +29,7 @@ const Cars = () => {
         try {
             const res = await api.get(url);
             if (res.status === 200) {
-                console.log(res.data);
+                console.log("Cars data: ", res.data);
                 setCars(res.data);
             }
         } catch (error) {

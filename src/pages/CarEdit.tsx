@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import api from "../api/axios.ts";
 import { Navigate, useParams } from "react-router-dom";
 
-//TODO
+
 interface CarUpdateData {
     model?: string;
     year?: number;
@@ -12,6 +12,7 @@ interface CarUpdateData {
     transmission?: string;
     color?: string;
     fuelConsumption?: number;
+    price?: number;
     brand?: { id: number };
 }
 
@@ -27,6 +28,7 @@ const CarEdit = () => {
     const [transmission, setTransmission] = useState<string>("");
     const [color, setColor] = useState<string>("");
     const [fuelConsumption, setFuelConsumption] = useState<number | "">("");
+    const [price, setPrice] = useState<number | "">("");
     const [brandId, setBrandId] = useState<number | "">("");
     const [brands, setBrands] = useState<{ id: number; name: string }[]>([]);
     const [redirect, setRedirect] = useState(false);
@@ -46,6 +48,7 @@ const CarEdit = () => {
                     setTransmission(car.transmission);
                     setColor(car.color);
                     setFuelConsumption(car.fuelConsumption);
+                    setPrice(car.price);
                     setBrandId(car.brand?.id || "");
                 }
             } catch (e) {
@@ -75,6 +78,12 @@ const CarEdit = () => {
         setter(isNaN(floatValue) ? "" : parseFloat(floatValue.toFixed(1))); // Ensures only 1 decimal place
     };
 
+    // Function to handle integer inputs (for price)
+    const handleIntegerInput = (value: string, setter: React.Dispatch<React.SetStateAction<number | "">>) => {
+        const intValue = parseInt(value, 10);
+        setter(isNaN(intValue) ? "" : intValue);
+    };
+
     // Submit form data to update the car
     const submit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -90,6 +99,7 @@ const CarEdit = () => {
         if (transmission) data.transmission = transmission;
         if (color) data.color = color;
         if (fuelConsumption !== "") data.fuelConsumption = parseFloat(fuelConsumption.toString()); // Ensure fuelConsumption is a number
+        if (price !== "") data.price = price;
         if (brandId !== "") data.brand = { id: brandId };
 
         try {
@@ -191,6 +201,15 @@ const CarEdit = () => {
                         className="form-control"
                         value={fuelConsumption}
                         onChange={(e) => handleFloatInput(e.target.value, setFuelConsumption)}
+                    />
+                </div>
+                <div className="mb-3">
+                    <div className="form-label">Price (€)</div>
+                    <input
+                        type="number"
+                        className="form-control"
+                        value={price}
+                        onChange={(e) => handleIntegerInput(e.target.value, setPrice)}
                     />
                 </div>
                 <div className="mb-3">

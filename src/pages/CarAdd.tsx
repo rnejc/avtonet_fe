@@ -12,7 +12,8 @@ const CarAdd = () => {
     const [transmission, setTransmission] = useState<string>("");
     const [color, setColor] = useState<string>("");
     const [fuelConsumption, setFuelConsumption] = useState<number | "">("");
-    const [brandId, setBrandId] = useState<number | "">("");
+    const [price, setPrice] = useState<number | "">("");
+    const [brandId, setBrandId] = useState<number | null>(null); // Change to null instead of ""
     const [brands, setBrands] = useState<{ id: number; name: string }[]>([]);
     const [redirect, setRedirect] = useState(false);
 
@@ -37,8 +38,19 @@ const CarAdd = () => {
         setter(isNaN(floatValue) ? "" : parseFloat(floatValue.toFixed(1))); // Ensures only 1 decimal place
     };
 
+    const handleIntegerInput = (value: string, setter: React.Dispatch<React.SetStateAction<number | "">>) => {
+        const intValue = parseInt(value, 10);
+        setter(isNaN(intValue) ? "" : intValue);
+    };
+
     const submit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Check if brandId is selected (check for null instead of "")
+        if (brandId === null) {
+            alert("Please select a brand.");
+            return;
+        }
 
         const data = {
             model,
@@ -49,8 +61,9 @@ const CarAdd = () => {
             transmission,
             color,
             fuelConsumption: fuelConsumption !== "" ? fuelConsumption : null,
+            price: price !== "" ? price : null,
             brand: {
-                id: brandId !== "" ? brandId : null,
+                id: brandId !== null ? brandId : null, // Ensure null if not selected
             },
         };
 
@@ -160,11 +173,21 @@ const CarAdd = () => {
                     />
                 </div>
                 <div className="mb-3">
+                    <div className="form-label">Price (€)</div>
+                    <input
+                        type="number"
+                        className="form-control"
+                        placeholder="Enter price in EUR"
+                        value={price}
+                        onChange={(e) => handleIntegerInput(e.target.value, setPrice)}
+                    />
+                </div>
+                <div className="mb-3">
                     <div className="form-label">Car Brand</div>
                     <select
                         className="form-control"
-                        value={brandId}
-                        onChange={(e) => setBrandId(e.target.value ? parseInt(e.target.value) : "")}
+                        value={brandId ?? ""} // Ensure null/"" for empty selection
+                        onChange={(e) => setBrandId(e.target.value ? parseInt(e.target.value) : null)} // Set null when empty
                     >
                         <option value="">Select car brand...</option>
                         {brands.map((brand) => (

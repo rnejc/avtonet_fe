@@ -8,6 +8,9 @@ interface Car {
     transmission: string;
     fuelConsumption: number;
     color: string;
+    price: number;
+    brand: { name: string };
+    user?: { id: number }; // Optional to avoid crashes if user data is missing
 }
 
 const Card = ({ data, deleteCar, editCar }: {
@@ -15,6 +18,13 @@ const Card = ({ data, deleteCar, editCar }: {
     deleteCar: (id: number) => void;
     editCar: (id: number) => void;
 }) => {
+    const loggedInUserId = parseInt(localStorage.getItem("userId") || "0", 10); // Ensure it's a number
+
+    console.log("Logged-in user ID:", loggedInUserId);
+    console.log("Car owner ID:", data.user?.id);
+
+    const isOwner = data.user?.id === loggedInUserId;
+
     return (
         <div className="card shadow-sm">
             <svg className="bd-placeholder-img card-img-top" width="100%" height="225"
@@ -22,33 +32,38 @@ const Card = ({ data, deleteCar, editCar }: {
                  aria-label="Placeholder: Thumbnail"
                  preserveAspectRatio="xMidYMid slice" focusable="false">
                 <title>Placeholder</title>
-                <rect width="100%" height="100%" fill="#55595c"/>
+                <rect width="100%" height="100%" fill="#55595c" />
                 <text x="50%" y="50%" fill="#eceeef" dy=".3em">No Image</text>
             </svg>
             <div className="card-body">
                 <h2>{data.model}</h2>
                 <p className="card-text">Year: {data.year}</p>
                 <p className="card-text">Mileage: {data.mileage} km</p>
-                <p className="card-text">Engine Displacement: {data.engineDisplacement} L</p>
-                <p className="card-text">Transmission: {data.transmission}</p>
-                <p className="card-text">Fuel Type: {data.fuelType}</p>
-                <p className="card-text">Fuel Consumption: {data.fuelConsumption} L/100km</p>
-                <p className="card-text">Color: {data.color}</p>
+                <p className="card-text">Price: {data.price} €</p>
+
+                {/* Display brand name */}
+                <small className="text-muted" style={{ position: 'absolute', right: '10px', bottom: '10px' }}>
+                    {data.brand.name}
+                </small>
 
                 <div className="d-flex justify-content-between align-items-center">
                     <div className="btn-group">
-                        <button
-                            onClick={() => editCar(data.id)}
-                            type="button"
-                            className="btn btn-sm btn-outline-secondary">
-                            Edit
-                        </button>
-                        <button
-                            onClick={() => deleteCar(data.id)}
-                            type="button"
-                            className="btn btn-sm btn-outline-secondary">
-                            Delete
-                        </button>
+                        {isOwner && ( // Only show buttons if the user owns the car
+                            <>
+                                <button
+                                    onClick={() => editCar(data.id)}
+                                    type="button"
+                                    className="btn btn-sm btn-outline-secondary">
+                                    Edit
+                                </button>
+                                <button
+                                    onClick={() => deleteCar(data.id)}
+                                    type="button"
+                                    className="btn btn-sm btn-outline-secondary">
+                                    Delete
+                                </button>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

@@ -1,18 +1,24 @@
-import {Navigate} from "react-router-dom";
-import {useState} from "react";
+import { Link } from "react-router-dom";  // No need for Navigate anymore
+import { useState, useEffect } from "react";
 
 const Header = () => {
     const [logout, setLogout] = useState(false);
 
-    const logoutUser = (e:React.MouseEvent) => {
+    const logoutUser = (e: React.MouseEvent) => {
         e.preventDefault();
         localStorage.removeItem('token');
-        setLogout(true);
-    }
+        setLogout(true);  // Set logout state to true
+    };
 
-    if (logout) {
-        return <Navigate to="/login" />
-    }
+    // Use useEffect to handle the redirect after logout state change
+    useEffect(() => {
+        if (logout) {
+            // After logout state changes, navigate to login
+            setTimeout(() => {
+                window.location.href = '/login'; // Directly manipulate location to avoid issues
+            }, 0);
+        }
+    }, [logout]);
 
     return (
         <>
@@ -21,16 +27,20 @@ const Header = () => {
                     <div className="container">
                         <div className="row">
                             <div className="col-sm-8 col-md-7 py-4">
-                                <h4>O nas</h4>
-                                <p className="text-body-secondary">To je aplikacija, ki prikazuje avte.</p> //TODO write copy
+                                <h4>About</h4>
+                                <p className="text-body-secondary">
+                                    This application provides an easy and efficient platform for people to list their cars for sale.
+                                    It simplifies the process of creating posts, connecting with potential buyers, and managing car listings.
+                                </p>
                             </div>
                             <div className="col-sm-4 offset-md-1 py-4">
-                                <h4>Meni</h4> //TODO change language (opt.)
+                                <h4>Menu</h4>
                                 <ul className="list-unstyled">
-                                    <li><a href="#" className="text-white">Domov</a></li>
-                                    <li><a href="#" className="text-white">Avti</a></li>
-                                    <li><a href="#" className="text-white">Prijava</a></li>
-                                    <li><a href="#" onClick={logoutUser} className="text-white">Odjava</a></li>
+                                    <li><Link to="/" className="text-white">Home</Link></li>
+                                    <li><Link to="/cars" className="text-white">View Listings</Link></li>
+                                    <li><Link to="/carAdd" className="text-white">Sell Your Car</Link></li>
+
+                                    <li><a href="#" onClick={logoutUser} className="text-white">Logout</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -38,16 +48,9 @@ const Header = () => {
                 </div>
                 <div className="navbar navbar-dark bg-dark shadow-sm">
                     <div className="container">
-                        <a href="#" className="navbar-brand d-flex align-items-center">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none"
-                                 stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                 aria-hidden="true" className="me-2" viewBox="0 0 24 24">
-                                <path
-                                    d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-                                <circle cx="12" cy="13" r="4"/>
-                            </svg>
-                            <strong>Album</strong>
-                        </a>
+                        <Link to="/" className="navbar-brand d-flex align-items-center">
+                            <strong>Avtonet</strong>
+                        </Link>
                         <button className="navbar-toggler" type="button" data-bs-toggle="collapse"
                                 data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false"
                                 aria-label="Toggle navigation">
@@ -57,6 +60,7 @@ const Header = () => {
                 </div>
             </header>
         </>
-    )
-}
-export default Header
+    );
+};
+
+export default Header;
