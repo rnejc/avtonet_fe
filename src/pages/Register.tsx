@@ -50,7 +50,7 @@ const Register = () => {
         <div className="container">
             <div className="login-welcome">
                 <h1>Welcome to Avtonet</h1>
-                <p>Join the platform and start discovering and listing cars.</p>
+                <p>Join the platform to start discovering and listing cars.</p>
             </div>
             <h2>Register</h2>
             <form onSubmit={submit}>

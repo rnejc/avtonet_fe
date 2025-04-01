@@ -8,6 +8,10 @@ import Cars from "./pages/Cars.tsx";
 import CarAdd from "./pages/CarAdd.tsx";
 import CarEdit from "./pages/CarEdit.tsx";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import CarDetails from "./pages/CarDetails.tsx";
+import "bootstrap-icons/font/bootstrap-icons.css";
+
+
 
 
 function App() {
@@ -25,6 +29,7 @@ function App() {
                         <Route path="/cars" element={<Cars />} />
                         <Route path="/carAdd" element={<CarAdd />} />
                         <Route path="/carEdit/:id" element={<CarEdit />} />
+                        <Route path="/car-details/:id" element={<CarDetails />} />
                     </Routes>
                 </Wrapper>
             ) : (

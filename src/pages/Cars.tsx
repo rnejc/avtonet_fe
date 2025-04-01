@@ -17,6 +17,7 @@ interface Car {
     price: number;
     brand: { id: number; name: string };
     user: { id: number };
+    image?: string;
 }
 
 const Cars = () => {
@@ -64,24 +65,22 @@ const Cars = () => {
     }, []);
 
     return (
-        <>
-            <div className="album py-5 bg-body-tertiary">
-                <div className="container">
-                    {errorMessage && (
-                        <div className="alert alert-danger" role="alert">
-                            {errorMessage}
-                        </div>
-                    )}
-                    <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
-                        <div className="col">
-                            {cars.map((car, i) => (
-                                <Card key={i} data={car} deleteCar={deleteCar} editCar={editCar} />
-                            ))}
-                        </div>
+        <div className="album py-5 bg-body-tertiary">
+            <div className="container">
+                {errorMessage && (
+                    <div className="alert alert-danger" role="alert">
+                        {errorMessage}
                     </div>
+                )}
+                <div className="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+                    {cars.map((car) => (
+                        <div className="col" key={car.id}> {/* ✅ Fixed: Each card gets its own column */}
+                            <Card data={car} deleteCar={deleteCar} editCar={editCar} />
+                        </div>
+                    ))}
                 </div>
             </div>
-        </>
+        </div>
     );
 };
 

@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import api from "../api/axios.ts";
 import { Navigate, useParams } from "react-router-dom";
+import axios from "axios";
 
+interface PresignedUrlResponse {
+    uploadUrl: string;
+    fileUrl: string;
+}
 
 interface CarUpdateData {
     model?: string;
@@ -14,12 +19,16 @@ interface CarUpdateData {
     fuelConsumption?: number;
     price?: number;
     brand?: { id: number };
+    image?: string; // Add image field to allow for updating image
 }
 
 const CarEdit = () => {
     const { id } = useParams<{ id: string }>();
 
     // State variables to store form data
+    const [uploading, setUploading] = useState(false);
+    const [fileUrl, setFileUrl] = useState<string | null>(null);
+    const [image, setImage] = useState<string>(""); // Image state
     const [year, setYear] = useState<number | "">("");
     const [model, setModel] = useState<string>("");
     const [mileage, setMileage] = useState<number | "">("");
@@ -50,6 +59,8 @@ const CarEdit = () => {
                     setFuelConsumption(car.fuelConsumption);
                     setPrice(car.price);
                     setBrandId(car.brand?.id || "");
+                    setImage(car.image || ""); // Set the existing image URL
+                    setFileUrl(car.image || null); // Set the existing image file URL if available
                 }
             } catch (e) {
                 console.log(e);
@@ -71,6 +82,50 @@ const CarEdit = () => {
         fetchCar();
         fetchBrands();
     }, [id]);
+
+    //Upload image
+    const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setUploading(true);
+
+        try {
+            // Step 1: Fetch presigned URL from the backend
+            const res = await fetch(`http://localhost:3000/cars/presigned-image-upload`, {
+                method: 'POST',
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem("token")}`, // Authorization header
+                },
+            });
+
+            if (!res.ok) {
+                throw new Error('Failed to get presigned URL');
+            }
+
+            const { uploadUrl, fileUrl }: PresignedUrlResponse = await res.json();
+
+            // Step 2: Upload the image to S3 using the presigned URL
+            const uploadResponse = await axios.put(uploadUrl, file, {
+                headers: {
+                    'Content-Type': file.type,  // Dynamically set content type based on file type
+                },
+            });
+
+            if (uploadResponse.status === 200) {
+                console.log('Image uploaded successfully');
+                setFileUrl(fileUrl);
+                setImage(fileUrl);  // Set image URL to state
+            } else {
+                throw new Error('Failed to upload image');
+            }
+        } catch (error) {
+            console.error('Upload error:', error);
+            alert('There was an error uploading the image.');
+        } finally {
+            setUploading(false);
+        }
+    };
 
     // Function to handle float inputs
     const handleFloatInput = (value: string, setter: React.Dispatch<React.SetStateAction<number | "">>) => {
@@ -101,6 +156,7 @@ const CarEdit = () => {
         if (fuelConsumption !== "") data.fuelConsumption = parseFloat(fuelConsumption.toString()); // Ensure fuelConsumption is a number
         if (price !== "") data.price = price;
         if (brandId !== "") data.brand = { id: brandId };
+        if (image) data.image = image; // Include image if it has been updated
 
         try {
             const res = await api.patch(`/cars/${id}`, data, {
@@ -118,9 +174,6 @@ const CarEdit = () => {
         }
     };
 
-
-
-
     // Redirect to /cars after successful update
     if (redirect) {
         return <Navigate to="/cars" />;
@@ -129,6 +182,22 @@ const CarEdit = () => {
     return (
         <div className="container">
             <form onSubmit={submit}>
+                <div className="p-4 border rounded max-w-md">
+                    <input type="file" onChange={handleFileChange}/>
+                    {uploading && <p>Uploading...</p>}
+                    {fileUrl ? (
+                        <div className="mt-2">
+                            <p>Current Image:</p>
+                            <img
+                                src={fileUrl}
+                                alt="Current car image"
+                                className="w-32 h-32 object-cover rounded"
+                            />
+                        </div>
+                    ) : (
+                        <p>No image uploaded yet.</p>
+                    )}
+                </div>
                 <div className="mb-3">
                     <div className="form-label">Model</div>
                     <input
@@ -213,13 +282,13 @@ const CarEdit = () => {
                     />
                 </div>
                 <div className="mb-3">
-                    <div className="form-label">Car Brand</div>
+                    <div className="form-label">Brand</div>
                     <select
                         className="form-control"
                         value={brandId}
-                        onChange={(e) => setBrandId(e.target.value ? parseInt(e.target.value) : "")}
+                        onChange={(e) => setBrandId(parseInt(e.target.value))}
                     >
-                        <option value="">Select car brand...</option>
+                        <option value="">Select brand</option>
                         {brands.map((brand) => (
                             <option key={brand.id} value={brand.id}>
                                 {brand.name}
@@ -227,9 +296,11 @@ const CarEdit = () => {
                         ))}
                     </select>
                 </div>
-                <button type="submit" className="btn btn-primary">
-                    Save Changes
-                </button>
+                <div className="mt-3">
+                    <button type="submit" className="btn btn-primary">
+                        Update Car
+                    </button>
+                </div>
             </form>
         </div>
     );
